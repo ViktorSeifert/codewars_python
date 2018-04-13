@@ -1,0 +1,1 @@
+Just some code for Katas from https://www.codewars.com/
