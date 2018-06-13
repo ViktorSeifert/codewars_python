@@ -9,21 +9,17 @@ def proper_fractions(n):
     if n == 1:
         return 0
 
-    result = {1: True}
+    proper = set()
+    proper.add(1)
 
     for i in range(2, n):
-        if i in result.keys():
+        if n % i == 0:
             continue
 
         if gcd(n, i) == 1:
-            result[i] = True
-        else:
-            result[i] = False
+            proper.add(i)
 
-            for j in range(2, n // i):
-                result[i * j] = False
-
-    return len([x for x in result.items() if x[1]])
+    return len(proper)
 
 
 print(proper_fractions(15))
