@@ -4,14 +4,16 @@ class BrainLuck(private val code: String) {
     private var instructionPointer : Int = 0
     private var dataPointer : Int = 0
     private var output : StringBuilder = StringBuilder()
+    private var codeView = code
 
     fun process(input: String): String {
         remainingInput = input
         instructionPointer = 0
         dataPointer = 0
         output = StringBuilder()
+        codeView = code
 
-        while (instructionPointer != code.length) {
+        while (instructionPointer < code.length) {
             val currentInstruction = code[instructionPointer]
             when (currentInstruction) {
                 '>' -> dataPointer += 1
@@ -35,9 +37,27 @@ class BrainLuck(private val code: String) {
 
             if (currentInstruction != '[' && currentInstruction != ']')
                 instructionPointer += 1
+
+            updateCodeView()
         }
 
         return output.toString()
+    }
+
+    private fun updateCodeView() {
+        if (instructionPointer >= code.length) {
+            codeView = code
+            return
+        }
+
+        val result = StringBuilder()
+        if (instructionPointer > 0)
+            result.append(code.substring(0, instructionPointer))
+        result.append("{")
+        result.append(code[instructionPointer])
+        result.append("}")
+        if (instructionPointer < code.length - 1)
+            result.append(code.substring(instructionPointer + 1, code.length))
     }
 
     private fun increment() {
@@ -62,15 +82,17 @@ class BrainLuck(private val code: String) {
         var pointer = instructionPointer
         var loopLevel = 0
 
-        if (getMemWithSafeInit() == 0.toChar())
+        if (getMemWithSafeInit() == 0.toChar()) {
             do {
                 when (code[pointer]) {
                     '[' -> loopLevel += 1
                     ']' -> loopLevel -= 1
                 }
                 pointer += 1
-            }
-            while (loopLevel != 0)
+            } while (loopLevel != 0)
+
+            return pointer
+        }
 
         return pointer + 1
     }
@@ -105,5 +127,6 @@ fun main(args: Array<String>) {
     println(BrainLuck(",>,<[>[->+>+<<]>>[-<<+>>]<<<-]>>.")
             .process(input[0].toString() + input[1].toString()))
 
-    println(BrainLuck(",>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]").process(""))
+    val fiboIn = StringBuilder().append(10.toChar()).toString()
+    println(BrainLuck(",>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]").process(fiboIn))
 }
