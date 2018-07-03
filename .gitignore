@@ -1,3 +1,4 @@
 python/venv/
 *.iml
 kotlin/out/**
+**/.idea/
