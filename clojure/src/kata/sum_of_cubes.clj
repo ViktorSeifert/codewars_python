@@ -1,5 +1,6 @@
 (ns kata.sum-of-cubes)
 
+; https://www.codewars.com/kata/build-a-pile-of-cubes/train/clojure
 ; Taken from https://rosettacode.org/wiki/Nth_root#Clojure
 (defn- abs [x]
   " Absolute value"
@@ -24,10 +25,7 @@
 ; ----------------------------------------------------------------
 
 (defn- cube-sum [n]
-  (->>
-    (range 1N (+ n 1N))
-    (map #(* % % %))
-    (reduce +)))
+  (* (/ 1 4) (* n n) (* (inc n) (inc n))))
 
 (defn- root-part [m]
   (nth-root (+ 1 (* 8 (nth-root m 2))) 2))
@@ -47,5 +45,5 @@
 ; So we compare with the cube-sum.
 (defn find-nb [m]
   (let [im (inverse-cube-sum m)
-        iim (cube-sum im)]
+        iim (cube-sum (bigdec im))]
     (if (== m iim) (bigint im) -1)))
