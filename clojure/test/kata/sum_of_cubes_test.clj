@@ -16,5 +16,6 @@
       (is (= (find-nb 40539911473216) 3568))))
   (deftest a-test5
     (testing "test5"
-      (is (number? (find-nb (- Integer/MAX_VALUE 2))))))
+      (is (== (find-nb 10252519345963644753026N) -1))))
+  
   
