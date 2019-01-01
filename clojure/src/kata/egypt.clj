@@ -2,18 +2,15 @@
 
 ; https://www.codewars.com/kata/54f8693ea58bce689100065f/train/clojure
 
-(defn- decompose-impl [n denom decomp]
+(defn- decompose-impl [n decomp]
   (if (zero? n)
     (filter pos? decomp)
-    (let [fraction (/ denom)]
-      ; (<= fraction n) should work, but it seems slower that what is below
-      (if (not (neg? (- n fraction)))
-        (recur (- n fraction) (inc denom) (conj decomp fraction))
-        (recur n (inc denom) decomp)))))
+    (let [next-fraction (->> n (/) (Math/ceil) bigint (/))]
+      (recur (- n next-fraction) (conj decomp next-fraction)))))
 
 (defn decompose [r]
-  (let [r (read-string r)
+  (let [r (rationalize (read-string r))
         whole-part (int r)]
     (if (zero? r)
       [] 
-      (->> (decompose-impl (- r whole-part) 2 [whole-part]) (map str)))))
+      (->> (decompose-impl (- r whole-part) [whole-part]) (map str)))))
