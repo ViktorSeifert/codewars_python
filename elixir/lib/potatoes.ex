@@ -3,6 +3,12 @@
 defmodule Potatoes do
   @spec potatoes(integer, integer, integer) :: integer
   def potatoes(p0, w0, p1) do
-    trunc(((100-p0)/100)*w0*(100/(100-p1)))
+    _potatoes(p0 / 1, w0 / 1, p1 / 1)
+    |> Float.floor
+    |> trunc
+  end
+
+  defp _potatoes(p0, w0, p1) do
+    ((100 - p0) / 100) * w0 * (100 / (100 - p1))
   end
 end
