@@ -10,8 +10,10 @@
 (defn- sub-select [selection numbers]
   (keep-indexed #(if (bit-test selection %1) %2) numbers))
 
+(defn- valid? [decomposition]
+  (and (not (nil? decomposition)) (= decomposition (distinct decomposition))))
+
 (defn- decompose-impl [n r]
-  (println [n r])
   (let [r2 (* r r) remaining (- n r2)]
     (cond
       (= r 0) nil
@@ -21,7 +23,9 @@
       (< remaining 0) nil
       :else
         (let [decomp-rem (decompose-impl remaining (int (Math/sqrt remaining)))]
-          (if (nil? decomp-rem) (decompose-impl n (- r 1)) (cons r decomp-rem))))))
+          (if
+            (valid? decomp-rem) (cons r decomp-rem) (decompose-impl n (- r 1)))))))
 
 (defn decompose [n]
-  (sort (decompose-impl (* n n) (- n 1))))
+  (let [result (decompose-impl (* n n) (- n 1))]
+    (if (valid? result) (sort result) nil)))
