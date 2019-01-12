@@ -11,4 +11,7 @@
 (deftest a-test3
   (testing "Test 3"
     (is (= (decompose 2) nil))))
+(deftest a-test3
+  (testing "Test 4"
+    (is (= (decompose 9927447) [1 3 17 87 4455 9927446]))))
     
