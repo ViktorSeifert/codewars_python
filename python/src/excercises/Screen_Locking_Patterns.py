@@ -1,83 +1,54 @@
 # https://www.codewars.com/kata/585894545a8a07255e0002f1/train/python
 
-point_map = [
-    ["A", "B"],
+points = ["A", "B", "C", "D", "E", "F", "G", "H", "I"]
+
+pass_through_point_map = [
     ["A", "B", "C"],
-    ["A", "D"],
     ["A", "D", "G"],
-    ["A", "E"],
     ["A", "E", "I"],
-    ["A", "F"],
-    ["A", "H"],
-    ["B", "C"],
-    ["B", "D"],
-    ["B", "E"],
     ["B", "E", "H"],
-    ["B", "F"],
-    ["B", "G"],
-    ["B", "I"],
-    ["C", "D"],
-    ["C", "E"],
     ["C", "E", "G"],
-    ["C", "F"],
     ["C", "F", "I"],
-    ["C", "H"],
-    ["D", "E"],
     ["D", "E", "F"],
-    ["D", "G"],
-    ["D", "H"],
-    ["D", "I"],
-    ["E", "F"],
-    ["E", "G"],
-    ["E", "H"],
-    ["E", "I"],
-    ["F", "G"],
-    ["F", "H"],
-    ["F", "I"],
-    ["G", "H"],
     ["G", "H", "I"],
-    ["H", "I"],
 ]
 
 
-def all_direct_paths_from(point):
-    for p in point_map:
-        if p[0] == point:
-            yield p
-        elif p[-1] == point:
-            p = p[:]
-            p.reverse()
-            yield p
+def get_path_extension_cost(pattern, point):
+    a = pattern[-1]
+
+    for p in pass_through_point_map:
+        if (a == p[0] and point == p[2] and p[1] not in pattern)\
+                or (a == p[-1] and point == p[0] and p[1] not in pattern):
+            return 2
+
+    return 1
 
 
-def count_patterns_from(firstPoint, length):
+def extend_patterns(patterns):
+    result = []
+    for pattern in patterns:
+        remaining_points = set(points[:]) - set(pattern)
+        for point in remaining_points:
+            cost = get_path_extension_cost(pattern, point)
+            if cost == 1:
+                result.append(pattern + [point])
+
+    return result
+
+
+def count_patterns_from(first_point, length):
     if length <= 0:
         return 0
-    patterns = []
-    patterns_recur([firstPoint], length - 1, patterns)
-    return len(patterns)
 
+    remaining_length = length - 1
+    patterns = [[first_point]]
 
-def concat(pattern, path):
-    new_pattern = pattern[:]
-    for p in path:
-        if p not in new_pattern:
-            new_pattern.append(p)
-    return new_pattern
+    while remaining_length > 0:
+        patterns = extend_patterns(patterns)
+        remaining_length -= 1
 
-
-def patterns_recur(pattern, length, patterns):
-    if length < 0:
-        return
-
-    if length == 0 and pattern not in patterns:
-        patterns.append(pattern)
-        return
-
-    for path in all_direct_paths_from(pattern[-1]):
-        new_pattern = concat(pattern, path)
-        if new_pattern != pattern:
-            patterns_recur(new_pattern, length - (len(new_pattern) - len(pattern)), patterns)
+    return len([i for i in patterns if len(i) == length])
 
 
 print(count_patterns_from('A', 10), 0)
