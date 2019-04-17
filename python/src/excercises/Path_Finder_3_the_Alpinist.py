@@ -13,12 +13,23 @@ def path_finder(area):
         current_coords = min(touched, key=lambda e: distances[e[0]][e[1]])
         touched.remove(current_coords)
 
+        if current_coords == (coord_sup - 1, coord_sup - 1):
+            break
+
         if current_coords[0] + 1 < coord_sup:
             new_coords = (current_coords[0] + 1, current_coords[1])
             update(area, current_coords, distances, new_coords, touched)
 
         if current_coords[1] + 1 < coord_sup:
             new_coords = (current_coords[0], current_coords[1] + 1)
+            update(area, current_coords, distances, new_coords, touched)
+
+        if current_coords[0] - 1 >= 0:
+            new_coords = (current_coords[0] - 1, current_coords[1])
+            update(area, current_coords, distances, new_coords, touched)
+
+        if current_coords[1] - 1 >= 0:
+            new_coords = (current_coords[0], current_coords[1] - 1)
             update(area, current_coords, distances, new_coords, touched)
 
     return distances[coord_sup - 1][coord_sup - 1]
