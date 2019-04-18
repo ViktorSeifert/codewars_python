@@ -1,10 +1,10 @@
 name:                haskell
 version:             0.1.0.0
-github:              "githubuser/haskell"
+github:              ""
 license:             BSD3
-author:              "Author name here"
+author:              "Viktor Seifert"
 maintainer:          "example@example.com"
-copyright:           "2019 Author name here"
+copyright:           "2019 Viktor Seifert"
 
 extra-source-files:
 - README.md
@@ -21,6 +21,8 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- hspec
+- hspec-discover
 
 library:
   source-dirs: src
