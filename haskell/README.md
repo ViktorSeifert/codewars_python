@@ -1,1 +1,1 @@
-# haskell
+# Haskell katas from Codewars
