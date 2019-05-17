@@ -25,6 +25,7 @@ dependencies:
 - hspec-discover
 - split
 - containers
+- random
 
 library:
   source-dirs: src
