@@ -14,6 +14,7 @@ module KataBefungeInterpreter where
       continueWithStack = continueWithOutputAndStack output
     in
       case i of
+        ' ' -> continueWithStack stack
         '@' -> output
         i | i `elem` "012345689" -> continueWithStack (digitToInt i : stack)
         '+' -> continueWithStack (performAdd stack)
