@@ -2,21 +2,36 @@
 
 module KataBefungeInterpreter where
   import System.Random (StdGen, next)
-  import Data.Char (digitToInt)
+  import Data.Char (digitToInt, chr, isDigit)
+  import Debug.Trace
 
   runBF :: StdGen -> (Int, Int) -> [String] -> Char -> String -> [Int] -> String
+  runBF rng pos@(x,y) instructions currentDirection output stack
+    | trace ("-->"
+      ++ show pos
+      ++ " "
+      ++ show instructions
+      ++ " "
+      ++ show (currentInstruction pos instructions)
+      ++ " "
+      ++ show currentDirection
+      ++ " "
+      ++ output
+      ++ " "
+      ++ show stack)
+    False = undefined
   runBF rng pos@(x,y) instructions currentDirection output stack = 
     let
       i = currentInstruction pos instructions
-      (nextX, nextY, nextRng) = nextPosition rng pos instructions currentDirection
-      continueWithDirection = runBF nextRng pos instructions
-      continueWithOutputAndStack = runBF nextRng (nextX, nextY) instructions currentDirection
+      direction = if i `elem` "<>^v?" then i else currentDirection
+      (nextX, nextY, nextRng) = nextPosition rng pos instructions direction
+      continueWithOutputAndStack = runBF nextRng (nextX, nextY) instructions direction
       continueWithStack = continueWithOutputAndStack output
     in
       case i of
-        ' ' -> continueWithStack stack
+        i | i `elem` " <>^v?" -> continueWithStack stack
         '@' -> output
-        i | i `elem` "012345689" -> continueWithStack (digitToInt i : stack)
+        i | isDigit i -> continueWithStack (digitToInt i : stack)
         '+' -> continueWithStack (performAdd stack)
         '-' -> continueWithStack (performSub stack)
         '*' -> continueWithStack (performMult stack)
@@ -28,13 +43,7 @@ module KataBefungeInterpreter where
         '\\' -> continueWithStack (performSwap stack)
         '$' -> continueWithStack (tail stack)
         '.' -> continueWithOutputAndStack (output ++ show (head stack)) (tail stack)
-        i | i `elem` "<>v^?" -> continueWithDirection i output stack
-        '_' -> if head stack == 0 
-          then continueWithDirection '>' output (tail stack)
-          else continueWithDirection '<' output (tail stack)
-        '|' -> if head stack == 0
-          then continueWithDirection 'v' output (tail stack)
-          else continueWithDirection '^' output (tail stack)
+        ',' -> continueWithOutputAndStack (output ++ [chr (head stack)]) (tail stack)
 
   currentInstruction :: (Int, Int) -> [String] -> Char
   currentInstruction (x,y) instructions = instructions !! y !! x
@@ -45,7 +54,7 @@ module KataBefungeInterpreter where
       (randN, nextRng) = next rng
       (deltaX, deltaY) = move randN currentDirection
       nextX = (x + deltaX) `rem` (length (instructions !! 0))
-      nextY = (x + deltaY) `rem` (length instructions)
+      nextY = (y + deltaY) `rem` (length instructions)
     in
       (nextX, nextY, nextRng)
 
@@ -87,4 +96,4 @@ module KataBefungeInterpreter where
   performSwap (x:y:xs) = y:x:xs
 
   interpret :: StdGen -> String -> String
-  interpret rng instructions = runBF rng (0, 0) (lines instructions) "" []
+  interpret rng instructions = runBF rng (0, 0) (lines instructions) '>' "" []
