@@ -4,12 +4,13 @@ module KataBefungeInterpreter where
   import System.Random (StdGen, next)
   import Data.Char (digitToInt)
 
-  runBF :: StdGen -> (Int, Int) -> [String] -> String -> [Int] -> String
-  runBF rng pos@(x,y) instructions output stack = 
+  runBF :: StdGen -> (Int, Int) -> [String] -> Char -> String -> [Int] -> String
+  runBF rng pos@(x,y) instructions currentDirection output stack = 
     let
       i = currentInstruction pos instructions
-      (nextX, nextY, nextRng) = nextPosition rng pos instructions
-      continueWithOutputAndStack = runBF nextRng (nextX, nextY) instructions
+      (nextX, nextY, nextRng) = nextPosition rng pos instructions currentDirection
+      continueWithDirection = runBF nextRng pos instructions
+      continueWithOutputAndStack = runBF nextRng (nextX, nextY) instructions currentDirection
       continueWithStack = continueWithOutputAndStack output
     in
       case i of
@@ -26,16 +27,22 @@ module KataBefungeInterpreter where
         '\\' -> continueWithStack (performSwap stack)
         '$' -> continueWithStack (tail stack)
         '.' -> continueWithOutputAndStack (output ++ show (head stack)) (tail stack)
+        i | i `elem` "<>v^?" -> continueWithDirection i output stack
+        '_' -> if head stack == 0 
+          then continueWithDirection '>' output (tail stack)
+          else continueWithDirection '<' output (tail stack)
+        '|' -> if head stack == 0
+          then continueWithDirection 'v' output (tail stack)
+          else continueWithDirection '^' output (tail stack)
 
   currentInstruction :: (Int, Int) -> [String] -> Char
   currentInstruction (x,y) instructions = instructions !! y !! x
 
-  nextPosition :: StdGen -> (Int, Int) -> [String] -> (Int, Int, StdGen)
-  nextPosition rng pos@(x,y) instructions =
+  nextPosition :: StdGen -> (Int, Int) -> [String] -> Char -> (Int, Int, StdGen)
+  nextPosition rng pos@(x,y) instructions currentDirection =
     let
-      i = currentInstruction pos instructions
       (randN, nextRng) = next rng
-      (deltaX, deltaY) = move randN i
+      (deltaX, deltaY) = move randN currentDirection
       nextX = (x + deltaX) `rem` (length (instructions !! 0))
       nextY = (x + deltaY) `rem` (length instructions)
     in
@@ -47,7 +54,6 @@ module KataBefungeInterpreter where
   move _ '>' = (1, 0)
   move _ 'v' = (0, 1)
   move rand '?' = move rand $ "<>^v" !! rand
-  move r _ = move r '>'
 
   performAdd :: [Int] -> [Int]
   performAdd (x:y:xs) = x + y : xs
