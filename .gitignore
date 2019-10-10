@@ -2,3 +2,7 @@ python/venv/
 *.iml
 kotlin/out/**
 **/.idea/
+.vscode
+.classpath
+.project
+.settings
