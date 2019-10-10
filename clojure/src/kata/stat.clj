@@ -27,7 +27,7 @@
 
 (defn- extract-average [durations]
   (let [
-    num-durations (count durations)
+    num-durations (->> (count durations) .longValue)
     durations-sum (reduce #(.plus %1 %2) durations)]
     (.dividedBy durations-sum num-durations)))
 
