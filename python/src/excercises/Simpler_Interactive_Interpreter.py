@@ -3,6 +3,7 @@
 import re
 
 
+
 def tokenize(expression):
     if expression == "":
         return []
@@ -49,8 +50,8 @@ def expect_error(inpput):
     interpreter = Interpreter()
     try:
         interpreter.input(inpput)
-    except:
-        print("caught exception")
+    except Exception as exception:
+        print("caught exception: " + str(exception))
         return
 
     print("!!! no exception !!!")
